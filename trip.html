@@ -1,0 +1,38 @@
+<html>
+<head>
+</head>
+<body>
+	<input type="file" name="file" id="file" onchange="readFile(this)">
+	<script type="text/javascript">
+	var roadTrip = ( function (){
+        readFile = function(selectedFile){
+		  	var file = selectedFile.files[0];
+		  	var reader = new FileReader();
+		  	reader.onload = function(progressEvent){
+		    	var lines = this.result.split('\n');
+		    	for(var line = 0; line < lines.length; line++){
+		     	 	var distArray = lines[line].split(';');
+		      		console.log(distArray);
+		      		distArray.pop();
+		      		for (var index = 0; index < distArray.length; index++) {
+		      			distArray[index] = parseInt(distArray[index].split(",")[1]);
+		      		}
+		      		getDistanceDiff(distArray);
+		    	}
+		  	};
+		  reader.readAsText(file);
+    	};
+	    getDistanceDiff = function(dist){
+	    	dist.sort(function(b,c){return b-c});
+			var start = 0;
+	      	for (var index = 0; index < dist.length; index++) {
+	      		var diff  = dist[index] - start;
+	      		start = dist[index];
+	      		document.write("<h4>"+diff+"</h4>");
+	      	}
+	      	document.write("-------------------")
+	    }
+	})();
+	</script>
+</body>
+</html>

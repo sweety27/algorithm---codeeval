@@ -1,0 +1,91 @@
+<html>
+<head>
+</head>
+<body>
+    <input type="file" name="file" id="file" onchange="readFile(this)">
+    <script type="text/javascript">
+        var Sudoku = ( function (){
+        var _rows, _cols, _subGrid;
+
+        init = function(data){
+            subGridData(data);
+            return this;
+        };
+        isValid = function(){
+            document.write((validateSudoku(_rows) && validateSudoku(_cols) && validateSudoku(_subGrid)))
+            document.write("\n")
+            return (validateSudoku(_rows) && validateSudoku(_cols) && validateSudoku(_subGrid));
+        };
+
+        validateSudoku = function(data){
+            for (var row = 0; row < 4; row++) {
+                (data[row].sort());
+                for (var col = 0; col < 4; col++) {
+                    var value = data[row][col], next_value = data[row][col + 1];
+                    if (!(value && value > 0 && value < 10)){
+                        return false;
+                    }
+                    if (col !== 3 && value === next_value){
+                        return false;
+                    }
+
+                }
+            }
+            return true;
+        };
+
+        subGridData = function(data){
+            _rows = data;
+            _cols = [];
+            _subGrid = [];
+            for (var i = 0; i < 4; i++) {
+                _cols.push([]);
+                _subGrid.push([]);
+            }
+            for (var row = 0; row < 4; row++) {
+                for (var col = 0; col < 4; col++) {
+                    _cols[col][row] = data[row][col];
+                    subGridRow = Math.floor( row / 2 );
+                    subGridCol = Math.floor( col / 2 );
+                    subGridIndex = subGridRow * 2 + subGridCol;
+                    _subGrid[subGridIndex].push(data[row][col]);
+                }
+            }
+
+        };
+        return {
+            init: init,
+            isValid: isValid
+        };
+    })();
+   
+   readFile = function(selectedFile){
+        var file = selectedFile.files[0];
+        var reader = new FileReader();
+        reader.onload = function(progressEvent){
+            var lines = this.result.split('\n');
+            for(var line = 0; line < lines.length; line++){
+                var sudokuLine = lines[line].split(';')[1];
+                var sudokuArray = sudokuLine.split(',').map(function(item) {
+                    return parseInt(item);
+                });
+                listToMatrix(sudokuArray, 4)
+            }
+        };
+      reader.readAsText(file);
+    };
+
+    listToMatrix = function(list, elementsPerSubArray) {
+        var matrix = [], i, k;
+        for (i = 0, k = -1; i < list.length; i++) {
+            if (i % elementsPerSubArray === 0) {
+                k++;
+                matrix[k] = [];
+            }
+            matrix[k].push(list[i]);
+        }
+        Sudoku.init(matrix).isValid();
+    }
+    </script>
+</body>
+</html>
